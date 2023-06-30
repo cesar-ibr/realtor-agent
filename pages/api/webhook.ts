@@ -12,17 +12,23 @@ export default async function handler(req: NextRequest) {
   const token = url.searchParams.get('hub.verify_token');
   const challenge = url.searchParams.get('hub.challenge');
 
-  // Handle webhooh verification
-  if (mode && token) {
-    if (token === VERIFY_TOKEN) {
-      return new Response(challenge, { status: 200 });
-    } else {
-      new Response(JSON.stringify({ message: 'Forbidden Access' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      });
+  console.log('[REQUEST] => ', req.method, 'URL:', req.url);
+  
+
+  if (req.method === 'GET') {
+    // Handle webhooh verification
+    if (mode && token) {
+      if (token === VERIFY_TOKEN) {
+        return new Response(challenge, { status: 200 });
+      } else {
+        new Response(JSON.stringify({ message: 'Forbidden Access' }), {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
     }
   }
+
   // `cors` also takes care of handling OPTIONS requests
   const data = await req.json();
   console.log('Payload:', data);
